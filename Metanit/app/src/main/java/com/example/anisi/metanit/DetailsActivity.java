@@ -42,7 +42,7 @@ public class DetailsActivity extends AppCompatActivity {
         k = intent.getIntExtra("id", 0);
         context = getBaseContext();
         userCursor =  db.query("REFERENCE_BOOK",
-                new String[] {"DESC"},
+                new String[] {"description"},
                 "_id = ?", new String[] {Integer.toString(k+1)},
                 null, null, null);
         String resName = "";

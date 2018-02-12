@@ -7,12 +7,12 @@ import android.content.ContentValues;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "reference_book.db"; // название бд
-    private static final int SCHEMA = 31; // версия базы данных
+    private static final int SCHEMA = 32; // версия базы данных
     static final String TABLE = "REFERENCE_BOOK"; // название таблицы в бд
     // названия столбцов
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_DESC = "desc";
+    public static final String COLUMN_DESC = "description";
     public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_IMAGE_ID = "image_id";
     public static final String COLUMN_URL = "url";
