@@ -16,3 +16,40 @@
 2. Выбрать тему, подходящую для разработки справочника.
 3. Проанализировать и изучить предметную область выбранной темы.
 4. Разработать приложение-справочник по выбранной теме.
+
+# Как запустить backend Django
+
+1. Установить [Python](https://www.python.org) версии не ниже 3.5. Не забудьте проставить галочку "Add Python to PATH".
+2. Запустить командную строку (если Python установлен для всех пользователей, то командная строка должна быть запущена с административными правами).
+3. Перейдите в подкаталог backend в каталоге проекта 
+
+```
+C:\Users\<User> cd <PROJECT_PATH>\backend
+```
+
+4. Выполните установку необходимых сторонних пакетов Python:
+
+```
+<PROJECT_PATH>\backend> pip install -r requirements.txt
+```
+
+5. Выполните реструктуризацию данных:
+
+```
+<PROJECT_PATH>\backend> python manage.py makemigrations backend
+<PROJECT_PATH>\backend> python manage.py migrate
+```
+
+6. Создайте администратора системы:
+
+```
+<PROJECT_PATH>\backend> python manage.py createsuperuser
+```
+
+7. Запустите веб-сервер:
+
+```
+<PROJECT_PATH>\backend> python manage.py runserver
+```
+
+8. Проверьте работу API, открыв в браузере странице по адресу http://localhost:8000/. Проверьте работу админку по адресу http://localhost:8000/admin/.
