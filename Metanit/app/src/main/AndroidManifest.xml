@@ -23,11 +23,6 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value="com.example.anisi.metanit.MainActivity" />
         </activity>
-        <activity android:name=".ThirdActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.anisi.metanit.MainActivity" />
-        </activity>
         <activity android:name=".TestActivity" />
         <activity android:name=".MoodleActivity"></activity>
 
