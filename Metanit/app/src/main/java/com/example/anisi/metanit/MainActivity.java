@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("192.168.226.1:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
