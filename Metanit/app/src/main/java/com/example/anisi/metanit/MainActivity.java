@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import retrofit2.Retrofit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,13 +37,40 @@ public class MainActivity extends AppCompatActivity {
         userList = (ListView)findViewById(R.id.list);
         databaseHelper = new DatabaseHelper(getApplicationContext());
         userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, DetailsActivity.class);
+            public void onItemClick(AdapterView<?> a, View v, final int position, long id) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://192.168.0.107:8000/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-                intent.putExtra("id", position);
-                //запускаем вторую активность
-                startActivity(intent);
+                CoursesApi coursesApi = retrofit.create(CoursesApi.class);
+                Call<List<Courses>> courses = coursesApi.courses();
+
+                ArrayList<String> ar1 = new ArrayList<String>();
+
+                courses.enqueue(new Callback<List<Courses>>() {
+                    @Override
+                    public void onResponse(Call<List<Courses>> call, Response<List<Courses>> response) {
+                        ArrayList<String> ar = new ArrayList<String>();
+                        if (response.isSuccessful()) {
+                            Intent intent = new Intent();
+                            intent.setClass(MainActivity.this, DetailsActivity.class);
+                            String url = response.body().get(position).getUrl();
+                            intent.putExtra("url", url);
+                            //запускаем вторую активность
+                            startActivity(intent);
+                        } else {
+                            Log.d("response code " + response.code(),"tupoTagIsSuccessfulElse");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Courses>> call, Throwable t) {
+                        Log.d("failure " + t,"tupoTagOnFailure");
+                    }
+                });
+
+
             }
         });
     }
@@ -49,19 +79,27 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.228:8000/")
+                .baseUrl("http://192.168.0.107:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         CoursesApi coursesApi = retrofit.create(CoursesApi.class);
-
         Call<List<Courses>> courses = coursesApi.courses();
+
+        ArrayList<String> ar1 = new ArrayList<String>();
 
         courses.enqueue(new Callback<List<Courses>>() {
             @Override
             public void onResponse(Call<List<Courses>> call, Response<List<Courses>> response) {
+                ArrayList<String> ar = new ArrayList<String>();
                 if (response.isSuccessful()) {
-                    Log.d("response " + response.body().size(),"tupoTagIsSuccessful");
+                    for (int i = 0; i < response.body().size(); i++){
+                        ar.add(response.body().get(i).getName().toString());
+                    }
+                    String[] sl = {"dsa","dsd"};
+                    ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
+                    userList.setAdapter(adapter);
+                    Log.d("RESPONSE!!! " + response.body().get(1).getName(),"tupoTagIsSuccessful");
                 } else {
                     Log.d("response code " + response.code(),"tupoTagIsSuccessfulElse");
                 }
@@ -72,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("failure " + t,"tupoTagOnFailure");
             }
         });
-
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.id.list, coursesList);
         /*
         // открываем подключение
         db = databaseHelper.getReadableDatabase();
