@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> a, View v, final int position, long id) {
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://192.168.0.107:8000/")
+                        .baseUrl("http://192.168.1.228:8000/")
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 
@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
                         if (response.isSuccessful()) {
                             Intent intent = new Intent();
                             intent.setClass(MainActivity.this, DetailsActivity.class);
-                            String url = response.body().get(position).getUrl();
-                            intent.putExtra("url", url);
+                            //int id = response.body().get(1);
+                            //intent.putExtra("id", id);
                             //запускаем вторую активность
                             startActivity(intent);
                         } else {
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -96,10 +96,15 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < response.body().size(); i++){
                         ar.add(response.body().get(i).getName().toString());
                     }
-                    String[] sl = {"dsa","dsd"};
                     ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
                     userList.setAdapter(adapter);
-                    Log.d("RESPONSE!!! " + response.body().get(1).getName(),"tupoTagIsSuccessful");
+                    //создание классов курсов
+                    ArrayList<Courses> coursesAR = new ArrayList<>();
+                    for (int i = 0; i < response.body().size(); i++){
+                        coursesAR.add(response.body().get(i));
+                        Log.d("response courses #" + i +" = " + coursesAR.get(i).getName(),"");
+                    }
+                    Log.d("response " + response.body().get(0).getName(),"tupoTagIsSuccessful");
                 } else {
                     Log.d("response code " + response.code(),"tupoTagIsSuccessfulElse");
                 }

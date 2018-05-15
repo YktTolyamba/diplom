@@ -1,3 +1,4 @@
+from django_filters import rest_framework
 from rest_framework import routers, serializers, viewsets
 
 from backend import models
@@ -34,6 +35,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 class CourseTopicViewSet(viewsets.ModelViewSet):
     queryset = models.CourseTopic.objects.all()
     serializer_class = CourseTopicSerializer
+    filter_backends = (rest_framework.DjangoFilterBackend,)
+    filter_fields = ('course', 'code', 'name')
 
 
 router = routers.DefaultRouter()
