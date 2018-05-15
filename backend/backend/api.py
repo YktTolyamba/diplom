@@ -7,19 +7,19 @@ from backend import models
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.User
-        fields = ['url', 'username', 'email', 'is_staff', 'last_name', 'first_name', 'second_name']
+        fields = ['id', 'url', 'username', 'email', 'is_staff', 'last_name', 'first_name', 'second_name']
 
 
 class CourseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Course
-        fields = ['url', 'name']
+        fields = ['id', 'url', 'name']
 
 
 class CourseTopicSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.CourseTopic
-        fields = ['url', 'course', 'code', 'name', 'text', 'modified']
+        fields = ['id', 'url', 'course', 'code', 'name', 'text', 'modified']
 
 
 class UserViewSet(viewsets.ModelViewSet):

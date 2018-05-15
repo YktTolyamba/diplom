@@ -34,7 +34,7 @@ class Course(models.Model):
     class Meta:
         verbose_name = 'дисциплина'
         verbose_name_plural = 'дисциплины'
-        ordering = ['id']
+        ordering = ['name']
 
     def __str__(self):
         return self.name

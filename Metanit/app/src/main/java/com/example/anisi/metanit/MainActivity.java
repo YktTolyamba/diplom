@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> a, View v, final int position, long id) {
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://192.168.1.228:8000/")
+                        .baseUrl("http://192.168.0.107:8000/")
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 
@@ -53,10 +53,11 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Call<List<Courses>> call, Response<List<Courses>> response) {
                         ArrayList<String> ar = new ArrayList<String>();
                         if (response.isSuccessful()) {
+                            CoursesList cl = new CoursesList();
                             Intent intent = new Intent();
                             intent.setClass(MainActivity.this, DetailsActivity.class);
-                            //int id = response.body().get(1);
-                            //intent.putExtra("id", id);
+                            int id = response.body().get(position).getId();
+                            intent.putExtra("ChosenCourse", id);
                             //запускаем вторую активность
                             startActivity(intent);
                         } else {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.228:8000/")
+                .baseUrl("http://192.168.0.107:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -98,15 +99,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                     ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
                     userList.setAdapter(adapter);
-                    //создание классов курсов
-                    ArrayList<Courses> coursesAR = new ArrayList<>();
+                    //создание массива курсов
+
+                    CoursesList cl = new CoursesList();
+                    cl.PushCourse(response);
+                    for (int i = 0; i < response.body().size(); i++) {
+                        //Log.d("response courses #" + i + " = " + cl.GetCourse(i).getName() + ", id = " + cl.GetCourse(i).getId(), "Msg - courses; ");
+                        Log.d("respon courses code = " + cl.GetCourse(i).getId() + " " + cl.GetCourse(i).getName(),"- name");
+                    }
+                    /*ArrayList<Courses> coursesAR = new ArrayList<>();
                     for (int i = 0; i < response.body().size(); i++){
                         coursesAR.add(response.body().get(i));
-                        Log.d("response courses #" + i +" = " + coursesAR.get(i).getName(),"");
-                    }
-                    Log.d("response " + response.body().get(0).getName(),"tupoTagIsSuccessful");
+                        Log.d("response courses #" + i +" = " + coursesAR.get(i).getName(),"Msg - courses; ");
+                    }*/
+                    Log.d("response " + response.body().get(0).getName(),"Msg - IsSuccessful");
                 } else {
-                    Log.d("response code " + response.code(),"tupoTagIsSuccessfulElse");
+                    Log.d("response code " + response.code(),"Msg - IsSuccessfulElse");
                 }
             }
 
