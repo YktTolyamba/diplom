@@ -23,57 +23,28 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import us.feras.mdv.MarkdownView;
+
 public class DetailsActivity extends AppCompatActivity {
-    Context context;
-    DatabaseHelper databaseHelper;
-    SQLiteDatabase db;
-    Cursor userCursor;
-    int k;
+
+    int chosenTopic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        WebView webView = (WebView) findViewById(R.id.webView);
-        databaseHelper = new DatabaseHelper(getApplicationContext());
-        db = databaseHelper.getReadableDatabase();
+        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownView);
         Intent intent = getIntent();
-        k = intent.getIntExtra("id", 0);
-        context = getBaseContext();
-        userCursor =  db.query("REFERENCE_BOOK",
-                new String[] {"description"},
-                "_id = ?", new String[] {Integer.toString(k+1)},
-                null, null, null);
-        String resName = "";
-        if(userCursor.moveToFirst()) {
-            resName = userCursor.getString(0);
-            String text = readRawTextFile(context, getResources().getIdentifier(resName, "raw", "com.example.anisi.metanit"));
-            webView.loadDataWithBaseURL(null, text, "text/html", "en_US", null);
-        }
-    }
-
-    public static String readRawTextFile(Context context, int resId) {
-        InputStream inputStream = context.getResources().openRawResource(resId);
-
-        InputStreamReader inputReader = new InputStreamReader(inputStream);
-        BufferedReader buffReader = new BufferedReader(inputReader);
-        String line;
-        StringBuilder builder = new StringBuilder();
-
-        try {
-            while ((line = buffReader.readLine()) != null) {
-                builder.append(line);
-                builder.append("<br />");
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        return builder.toString();
+        int chosenTopic = intent.getIntExtra("ChosenTopic", 0);
+        CourseTopicsList ctl = new CourseTopicsList();
+        Log.d("PROVERKA intent = " + chosenTopic," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        String MDtext = ctl.coursesTopicsAR.get(chosenTopic).text;
+        markdownView.loadMarkdown(MDtext);
     }
 
     public void onClickPrev_button(View view) {
-        if(k < 1){
+        if(chosenTopic < 1){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
             builder.setTitle("Это первая лекция")
                     .setIcon(R.drawable.n4)
@@ -91,7 +62,7 @@ public class DetailsActivity extends AppCompatActivity {
         else {
             Intent intent = new Intent();
             intent.setClass(DetailsActivity.this, DetailsActivity.class);
-            intent.putExtra("id", k - 1);
+            intent.putExtra("id", chosenTopic - 1);
             startActivity(intent);
             this.finish();
         }
@@ -99,7 +70,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void onClickNext_button(View view) {
         Intent intent = new Intent();
-        if(k>14){
+        if(chosenTopic>14){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
             builder.setTitle("Это последняя лекция")
                     .setIcon(R.drawable.n4)
@@ -116,7 +87,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         else {
             intent.setClass(DetailsActivity.this, DetailsActivity.class);
-            intent.putExtra("id", k + 1);
+            intent.putExtra("id", chosenTopic + 1);
             startActivity(intent);
             this.finish();
         }
