@@ -10,5 +10,5 @@ import retrofit2.http.GET;
 
 public interface CoursesApi {
     @GET("course/")
-    Call<List<Courses>> courses();
+    Call<List<Course>> course();
 }

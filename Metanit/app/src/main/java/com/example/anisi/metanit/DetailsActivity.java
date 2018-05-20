@@ -1,33 +1,21 @@
 package com.example.anisi.metanit;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.View;
 import android.util.Log;
-import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import us.feras.mdv.MarkdownView;
 
 public class DetailsActivity extends AppCompatActivity {
 
     int chosenTopic;
+    ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +24,24 @@ public class DetailsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownView);
         Intent intent = getIntent();
-        int chosenTopic = intent.getIntExtra("ChosenTopic", 0);
-        CourseTopicsList ctl = new CourseTopicsList();
+        String chosenTopic = intent.getStringExtra("ChosenTopicsCode");
+        courseTopicArrayList = getIntent().getParcelableArrayListExtra(CourseTopic.class.getCanonicalName());
         Log.d("PROVERKA intent = " + chosenTopic," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        String MDtext = ctl.coursesTopicsAR.get(chosenTopic).text;
+        String MDtext = "Ошибка загрузки текста";
+        for (int i = 0; i < courseTopicArrayList.size(); i++){
+            if (courseTopicArrayList.get(i).code.equals(chosenTopic)){
+                MDtext = courseTopicArrayList.get(i).text;
+            }
+        }
         markdownView.loadMarkdown(MDtext);
     }
 
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        Intent intent = getIntent();
+//        int
+//    }
     public void onClickPrev_button(View view) {
         if(chosenTopic < 1){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
