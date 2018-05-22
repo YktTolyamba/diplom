@@ -19,7 +19,12 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
 class CourseTopicSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.CourseTopic
-        fields = ['id', 'url', 'course', 'code', 'name', 'text', 'modified']
+        fields = ['id', 'url', 'course', 'code', 'name', 'text', 'modified','tag']
+
+class TagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = models.Course
+        fields = ['id', 'name']
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,7 +44,13 @@ class CourseTopicViewSet(viewsets.ModelViewSet):
     filter_fields = ('course', 'code', 'name')
 
 
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = models.Tag.objects.all()
+    serializer_class = TagSerializer
+
+
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'course', CourseViewSet)
 router.register(r'course_topic', CourseTopicViewSet)
+router.register(r'tag', TagViewSet)

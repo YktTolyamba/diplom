@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import okhttp3.Cache;
 import okhttp3.Interceptor;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

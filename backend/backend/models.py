@@ -57,10 +57,24 @@ class CourseElement(models.Model):
         ordering = ['course', 'code']
 
 
+class Tag(models.Model):
+
+    name = models.CharField('название тега', max_length=150, default='')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+        ordering = ['name']
+
+
 class CourseTopic(CourseElement):
     kind = 'topic'
 
     text = models.TextField('текст в формате Markdown', blank=True, default='')
+    tag = models.ManyToManyField(Tag)
 
     class Meta:
         verbose_name = 'дисциплина: теоретический материал'

@@ -46,6 +46,13 @@ class CourseTopicAdmin(admin.ModelAdmin):
     list_filter = ['course']
 
 
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    actions_on_bottom = True
+    actions_on_top = False
+    list_display = ['name']
+
+
 admin.site.site_header = 'Администрирование'
 admin.site.site_title = 'Администрирование'
 admin.site.index_title = 'Таблицы'

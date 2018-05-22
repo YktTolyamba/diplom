@@ -61,7 +61,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
