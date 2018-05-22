@@ -13,21 +13,21 @@
         android:roundIcon="@drawable/n4"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CourseTopicsActivity">
+        <activity android:name=".Activity.CourseTopicsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.anisi.metanit.MainActivity" />
+                android:value="com.example.anisi.metanit.Activity.MainActivity" />
         </activity>
-        <activity android:name=".DetailsActivity">
+        <activity android:name=".Activity.DetailsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.anisi.metanit.CourseTopicsActivity" />
+                android:value="com.example.anisi.metanit.Activity.CourseTopicsActivity" />
         </activity>
         <activity android:name=".TestActivity" />
         <activity android:name=".MoodleActivity" />

@@ -1,13 +1,19 @@
-package com.example.anisi.metanit;
+package com.example.anisi.metanit.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.anisi.metanit.Course;
+import com.example.anisi.metanit.CourseTopic;
+import com.example.anisi.metanit.CourseTopicApi;
+import com.example.anisi.metanit.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,34 +33,46 @@ import static com.example.anisi.metanit.Utils.isNetworkAvailable;
 
 public class CourseTopicsActivity extends AppCompatActivity {
 
+    String TAG = "CourseTopicActivity";
     ListView TopicList;
     ArrayList<Course> courseArrayList = new ArrayList<>();
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // this takes the user 'back', as if they pressed the left-facing triangle icon on the main android toolbar.
+                // if this doesn't work as desired, another possibility is to call `finish()` here.
+                CourseTopicsActivity.this.onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_topics);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Log.d("CourseTopicActivity","onCreate: create");
         TopicList = (ListView)findViewById(R.id.list);
 
         //получение id выбранного курса
         final Intent intent = getIntent();
-        final int chosenCourse = intent.getIntExtra("ChosenCourseId",0);
+        int chosenCourse = intent.getIntExtra("ChosenCourseId",0);
         courseArrayList = getIntent().getParcelableArrayListExtra(Course.class.getCanonicalName());
+        Log.d("CourseTopicActivity"," Intent course = " + chosenCourse);
 
-        OkHttpClient client = new OkHttpClient
+        OkHttpClient clientTopic = new OkHttpClient
                 .Builder()
                 .cache(new Cache(getApplicationContext().getCacheDir(), 10 * 1024 * 1024)) // 10 MB
                 .addInterceptor(new Interceptor() {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
-                        if (isNetworkAvailable(getApplicationContext())) {
-                            request = request.newBuilder().header("Cache-Control", "public, max-age=" + 60).build();
-                        } else {
-                            request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
-                        }
+                        request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
                         return chain.proceed(request);
                     }
                 })
@@ -62,7 +80,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://192.168.0.107:8000/")
-                .client(client)
+                .client(clientTopic)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -80,18 +98,18 @@ public class CourseTopicsActivity extends AppCompatActivity {
                     for (CourseTopic object: courseTopicArrayList) {
                         ar.add(object.name);
                     }
-                    ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
+                    ArrayAdapter<String> adapter;
+                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
                     TopicList.setAdapter(adapter);
 
-                    //Log.d("R -- topics " + response.body().get(1).name,"Msg - IsSuccessful");
+                    Log.d(TAG,"Response successful");
                 } else {
-                    Log.d("response code " + response.code(),"Msg - IsSuccessfulElse");
+                    Log.d(TAG,"Response not successful");
                 }
             }
-
             @Override
             public void onFailure(Call<List<CourseTopic>> call, Throwable t) {
-                Log.d("failure " + t," Failure");
+                Log.d(TAG,"Response failed");
             }
         });
 
@@ -106,5 +124,43 @@ public class CourseTopicsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("CourseTopicActivity", "onRestart: restart");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("CourseTopicActivity", "onStart: start");
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("CourseTopicActivity", "onResume: resume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("CourseTopicActivity", "onPause: pause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("CourseTopicActivity", "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("CourseTopicActivity", "onDestroy");
     }
 }
