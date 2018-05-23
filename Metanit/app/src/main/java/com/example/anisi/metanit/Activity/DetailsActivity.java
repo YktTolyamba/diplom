@@ -18,6 +18,7 @@ import us.feras.mdv.MarkdownView;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    String TAG = "DetailsActivity";
     int chosenTopic;
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
 
@@ -57,32 +58,33 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("DetailsActivity", "onStart: start");
+        Log.d(TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("DetailsActivity", "onResume: resume");
+        Log.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("DetailsActivity", "onPause: pause");
+        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("DetailsActivity", "onStop: stop");
+        Log.d(TAG, "onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("DetailsActivity", "onDestroy: destroy");
+        Log.d(TAG, "onDestroy");
     }
+
     public void onClickPrev_button(View view) {
         if(chosenTopic < 1){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);

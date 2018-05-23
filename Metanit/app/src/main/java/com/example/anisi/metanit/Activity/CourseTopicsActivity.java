@@ -67,7 +67,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
 
         OkHttpClient clientTopic = new OkHttpClient
                 .Builder()
-                .cache(new Cache(getApplicationContext().getCacheDir(), 10 * 1024 * 1024)) // 10 MB
+                .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
                 .addInterceptor(new Interceptor() {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -79,7 +79,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .client(clientTopic)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -129,27 +129,25 @@ public class CourseTopicsActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("CourseTopicActivity", "onRestart: restart");
+        Log.d("CourseTopicActivity", "onRestart");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("CourseTopicActivity", "onStart: start");
-
-
+        Log.d("CourseTopicActivity", "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("CourseTopicActivity", "onResume: resume");
+        Log.d("CourseTopicActivity", "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("CourseTopicActivity", "onPause: pause");
+        Log.d("CourseTopicActivity", "onPause");
     }
 
     @Override
