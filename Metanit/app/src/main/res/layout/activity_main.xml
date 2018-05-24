@@ -1,37 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:weightSum="1">
+        android:layout_height="wrap_content"
+        android:text="   Список дисциплин"
+        android:textSize="10pt"
+        android:textColor="#000000"/>
 
-        <TextView
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="   Список дисциплин"
-            android:textSize="10pt"
-            android:textColor="#000000"/>
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="389dp"
+        android:layout_weight="0.86"
+        android:textColor="#000000"/>
 
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="389dp"
-            android:layout_weight="0.86"
-            android:textColor="#000000"/>
-
-        <Button
-            android:id="@+id/moodle_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:onClick="onClickMoodle_button1"
-            android:text="Перейти на мудл" />
-
-    </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

@@ -29,12 +29,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.anisi.metanit.Utils.isNetworkAvailable;
-
 public class CourseTopicsActivity extends AppCompatActivity {
 
     String TAG = "CourseTopicActivity";
-    ListView TopicList;
+    ListView topicList;
     ArrayList<Course> courseArrayList = new ArrayList<>();
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
 
@@ -42,8 +40,6 @@ public class CourseTopicsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // this takes the user 'back', as if they pressed the left-facing triangle icon on the main android toolbar.
-                // if this doesn't work as desired, another possibility is to call `finish()` here.
                 CourseTopicsActivity.this.onBackPressed();
                 return true;
             default:
@@ -57,13 +53,13 @@ public class CourseTopicsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_course_topics);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Log.d("CourseTopicActivity","onCreate: create");
-        TopicList = (ListView)findViewById(R.id.list);
+        topicList = (ListView)findViewById(R.id.list);
 
         //получение id выбранного курса
         final Intent intent = getIntent();
-        int chosenCourse = intent.getIntExtra("ChosenCourseId",0);
+        int courseId = intent.getIntExtra("ChosenCourseId",0);
         courseArrayList = getIntent().getParcelableArrayListExtra(Course.class.getCanonicalName());
-        Log.d("CourseTopicActivity"," Intent course = " + chosenCourse);
+        Log.d("CourseTopicActivity"," Intent course = " + courseId);
 
         OkHttpClient clientTopic = new OkHttpClient
                 .Builder()
@@ -79,13 +75,13 @@ public class CourseTopicsActivity extends AppCompatActivity {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.228:8000/")
+                .baseUrl("http://192.168.0.107:8000/")
                 .client(clientTopic)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         CourseTopicApi courseTopicApi = retrofit.create(CourseTopicApi.class);
-        Call<List<CourseTopic>> courseTopics = courseTopicApi.courseTopic(chosenCourse);
+        Call<List<CourseTopic>> courseTopics = courseTopicApi.courseTopic(courseId);
 
         courseTopics.enqueue(new Callback<List<CourseTopic>>() {
             @Override
@@ -100,7 +96,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
                     }
                     ArrayAdapter<String> adapter;
                     adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
-                    TopicList.setAdapter(adapter);
+                    topicList.setAdapter(adapter);
 
                     Log.d(TAG,"Response successful");
                 } else {
@@ -113,12 +109,11 @@ public class CourseTopicsActivity extends AppCompatActivity {
             }
         });
 
-        TopicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        topicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 intent.setClass(CourseTopicsActivity.this, DetailsActivity.class);
-                String positionStr = Integer.toString(position+1);
-                intent.putExtra("ChosenTopicsCode", positionStr);
+                intent.putExtra("ChosenTopicsCode", position + 1);
                 intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
                 //запускаем активность лекции
                 startActivity(intent);

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Log.d(TAG,"onCreate");
 
-        ////////////////////////COURSE////CACHE////////////////////////
+        //прием данных и кэширование
         OkHttpClient client = new OkHttpClient
                 .Builder()
                 .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
@@ -65,11 +65,12 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.228:8000/")
+                .baseUrl("http://192.168.0.107:8000/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        //прием данных дисциплин
         CoursesApi coursesApi = retrofit.create(CoursesApi.class);
         Call<List<Course>> courses = coursesApi.course();
 
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     ArrayAdapter<String> adapter;
 
+                    //Прием данных лекций в цикле
                     for (int i = 1; i <= courseArrayList.size(); i++) {
                         CourseTopicApi courseTopicApi = retrofit.create(CourseTopicApi.class);
                         Call<List<CourseTopic>> courseTopics = courseTopicApi.courseTopic(i);
@@ -121,47 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ////////////////////////TOPIC////CACHE////////////////////////
-//        OkHttpClient clientTopic = new OkHttpClient
-//                .Builder()
-//                .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
-//                .addInterceptor(new Interceptor() {
-//                    @Override
-//                    public okhttp3.Response intercept(Chain chain) throws IOException {
-//                        Request request = chain.request();
-//                        request = request.newBuilder().header("Cache-Control", "public, max-age=" + 60).build();
-//                        return chain.proceed(request);
-//                    }
-//                })
-//                .build();
-//
-//        Retrofit retrofit2 = new Retrofit.Builder()
-//                .baseUrl("http://192.168.1.228:8000/")
-//                .client(clientTopic)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-
-
-//        ////////////////////////TAG////CACHE////////////////////////
-//        OkHttpClient clientTag = new OkHttpClient
-//                .Builder()
-//                .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
-//                .addInterceptor(new Interceptor() {
-//                    @Override
-//                    public okhttp3.Response intercept(Chain chain) throws IOException {
-//                        Request request = chain.request();
-//                        request = request.newBuilder().header("Cache-Control", "public, max-age=" + 60).build();
-//                        return chain.proceed(request);
-//                    }
-//                })
-//                .build();
-//
-//        Retrofit retrofit3 = new Retrofit.Builder()
-//                .baseUrl("http://192.168.1.228:8000/")
-//                .client(clientTag)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-
+        //прием данных тегов
         TagApi tagApi = retrofit.create(TagApi.class);
         Call<List<Tag>> tag = tagApi.tag();
 
@@ -192,53 +154,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-//        OkHttpClient client = new OkHttpClient
-//                .Builder()
-//                .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
-//                .addInterceptor(new Interceptor() {
-//                    @Override
-//                    public okhttp3.Response intercept(Chain chain) throws IOException {
-//                        Request request = chain.request();
-//                        request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
-//                        return chain.proceed(request);
-//                    }
-//                })
-//                .build();
-//
-//        Retrofit retrofit4 = new Retrofit.Builder()
-//                .baseUrl("http://192.168.1.228:8000/")
-//                .client(client)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//
-//        coursesApi = retrofit4.create(CoursesApi.class);
-//        courses = coursesApi.course();
-//
-//        courses.enqueue(new Callback<List<Course>>() {
-//            @Override
-//            public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
-//                if (response.isSuccessful()) {
-//                    //создание массива дисциплин
-//                    courseArrayList.addAll(response.body());
-//                    //создание массива с именами дисциплин
-//                    ArrayList<String> ar = new ArrayList<String>();
-//                    for (Course object: courseArrayList){
-//                        ar.add(object.name);
-//                    }
-//                    ArrayAdapter<String> adapter;
-//                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
-//                    userList.setAdapter(adapter);
-//                    //Log.d("R -- courses " + response.body().get(0).name,"Msg - IsSuccessful");
-//                } else {
-//                    //Log.d("response code " + response.code(),"Msg - IsSuccessfulElse");
-//                }
-//            }
-//            @Override
-//            public void onFailure(Call<List<Course>> call, Throwable t) {
-//                Log.d("failure " + t,"TagOnFailure");
-//            }
-//        });
     }
 
     @Override
@@ -276,10 +191,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
     }
-//    public void onClickMoodle_button1(View view) {
-//        Intent intent = new Intent();
-//        intent.setClass(MainActivity.this, MoodleActivity.class);
-//        intent.putExtra("id", 1000);
-//        startActivity(intent);
-//    }
 }

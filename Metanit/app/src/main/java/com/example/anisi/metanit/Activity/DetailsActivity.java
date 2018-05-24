@@ -19,20 +19,29 @@ import us.feras.mdv.MarkdownView;
 public class DetailsActivity extends AppCompatActivity {
 
     String TAG = "DetailsActivity";
-    int chosenTopic;
+    int topicsCodeInt;
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // this takes the user 'back', as if they pressed the left-facing triangle icon on the main android toolbar.
-                // if this doesn't work as desired, another possibility is to call `finish()` here.
                 DetailsActivity.this.onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public String getTopicText(String code){
+        String topicText = "Ошибка загрузки текста";
+        courseTopicArrayList = getIntent().getParcelableArrayListExtra(CourseTopic.class.getCanonicalName());
+        for (int i = 0; i < courseTopicArrayList.size(); i++) {
+            if (courseTopicArrayList.get(i).code.equals(code)) {
+                topicText = courseTopicArrayList.get(i).text;
+            }
+        }
+        return topicText;
     }
 
     @Override
@@ -43,15 +52,10 @@ public class DetailsActivity extends AppCompatActivity {
         Log.d("DetailsActivity", "onCreate: create");
         MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownView);
         Intent intent = getIntent();
-        String chosenTopic = intent.getStringExtra("ChosenTopicsCode");
-        courseTopicArrayList = getIntent().getParcelableArrayListExtra(CourseTopic.class.getCanonicalName());
-        Log.d("PROVERKA intent = " + chosenTopic," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        String MDtext = "Ошибка загрузки текста";
-        for (int i = 0; i < courseTopicArrayList.size(); i++){
-            if (courseTopicArrayList.get(i).code.equals(chosenTopic)){
-                MDtext = courseTopicArrayList.get(i).text;
-            }
-        }
+        topicsCodeInt = intent.getIntExtra("ChosenTopicsCode",0);
+        String topicsCodeString = Integer.toString(topicsCodeInt);
+        Log.d(TAG,"ChosenTopicCode = " + topicsCodeString);
+        String MDtext = getTopicText(topicsCodeString);
         markdownView.loadMarkdown(MDtext);
     }
 
@@ -86,7 +90,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void onClickPrev_button(View view) {
-        if(chosenTopic < 1){
+        if(topicsCodeInt == 1){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
             builder.setTitle("Это первая лекция")
                     .setIcon(R.drawable.n4)
@@ -104,7 +108,8 @@ public class DetailsActivity extends AppCompatActivity {
         else {
             Intent intent = new Intent();
             intent.setClass(DetailsActivity.this, DetailsActivity.class);
-            intent.putExtra("id", chosenTopic - 1);
+            intent.putExtra("ChosenTopicsCode", topicsCodeInt - 1);
+            intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
             startActivity(intent);
             this.finish();
         }
@@ -112,7 +117,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void onClickNext_button(View view) {
         Intent intent = new Intent();
-        if(chosenTopic>14){
+        if(topicsCodeInt == courseTopicArrayList.size()){
             AlertDialog.Builder builder = new AlertDialog.Builder(DetailsActivity.this);
             builder.setTitle("Это последняя лекция")
                     .setIcon(R.drawable.n4)
@@ -129,7 +134,8 @@ public class DetailsActivity extends AppCompatActivity {
         }
         else {
             intent.setClass(DetailsActivity.this, DetailsActivity.class);
-            intent.putExtra("id", chosenTopic + 1);
+            intent.putExtra("ChosenTopicsCode", topicsCodeInt + 1);
+            intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
             startActivity(intent);
             this.finish();
         }
