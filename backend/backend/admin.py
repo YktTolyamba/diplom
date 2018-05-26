@@ -43,7 +43,7 @@ class CourseTopicAdmin(admin.ModelAdmin):
     actions_on_bottom = True
     actions_on_top = False
     list_display = ['course', 'code', 'name']
-    list_filter = ['course']
+    list_filter = ['course', 'tag']
 
 
 @admin.register(models.Tag)

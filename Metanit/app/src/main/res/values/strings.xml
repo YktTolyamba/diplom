@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Диплом</string>
+    <string name="text_tab_header">Свой заголовок</string>
 </resources>
