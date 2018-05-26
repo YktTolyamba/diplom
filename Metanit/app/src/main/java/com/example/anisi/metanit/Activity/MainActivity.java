@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     String TAG = "MainActivity";
     ListView userList;
     ArrayList<Course> courseArrayList = new ArrayList<>();
+    ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
+    ArrayList<Tag> tagArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
+                .baseUrl("http://192.168.1.228:8000/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                         ar.add(object.name);
                     }
                     ArrayAdapter<String> adapter;
+                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
+                    userList.setAdapter(adapter);
 
                     //Прием данных лекций в цикле
                     for (int i = 1; i <= courseArrayList.size(); i++) {
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<List<CourseTopic>> call, Response<List<CourseTopic>> response) {
                                 if (response.isSuccessful()) {
+                                    courseTopicArrayList.addAll(response.body());
                                     Log.d(TAG, "Topic - success");
                                 } else {
                                     Log.d(TAG, "Topic - not success");
@@ -110,9 +115,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     }
-
-                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
-                    userList.setAdapter(adapter);
 
                     Log.d(TAG,"Courses - success");
                 } else {
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<Tag>> call, Response<List<Tag>> response) {
                 if (response.isSuccessful()) {
+                    tagArrayList.addAll(response.body());
                     Log.d(TAG,"Tag - success");
                 } else {
                     Log.d(TAG,"Tag - not success");
@@ -149,9 +152,13 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> a, View v, final int position, long id) {
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, CourseTopicsActivity.class);
-                int courseid = courseArrayList.get(position).id;
-                intent.putExtra("ChosenCourseId", courseid);
+                int courseId = courseArrayList.get(position).id;
+                String chosenTag = "НетТега";
+                intent.putExtra("ChosenCourseId", courseId);
                 intent.putParcelableArrayListExtra(Course.class.getCanonicalName(), courseArrayList);
+                intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
+                intent.putParcelableArrayListExtra(Tag.class.getCanonicalName(), tagArrayList);
+                intent.putExtra("ChosenTag", chosenTag);
                 //запускаем активность лекций
                 startActivity(intent);
             }

@@ -16,6 +16,8 @@ import com.example.anisi.metanit.Course;
 import com.example.anisi.metanit.CourseTopic;
 import com.example.anisi.metanit.CourseTopicApi;
 import com.example.anisi.metanit.R;
+import com.example.anisi.metanit.Tag;
+import com.example.anisi.metanit.TagApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,8 +37,10 @@ public class CourseTopicsActivity extends AppCompatActivity {
 
     String TAG = "CourseTopicActivity";
     ListView topicList;
+    ListView tagList;
     ArrayList<Course> courseArrayList = new ArrayList<>();
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
+    ArrayList<Tag> tagArrayList = new ArrayList<>();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -81,7 +85,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
         tabSpec.setContent(R.id.tab2);
         tabHost.addTab(tabSpec);
 
-        // вторая вкладка будет выбрана по умолчанию
+        // первая вкладка будет выбрана по умолчанию
         tabHost.setCurrentTabByTag("tag1");
 
         // обработчик переключения вкладок
@@ -91,68 +95,77 @@ public class CourseTopicsActivity extends AppCompatActivity {
             }
         });
 
-        topicList = (ListView)findViewById(R.id.list);
-
         //получение id выбранного курса
         final Intent intent = getIntent();
         int courseId = intent.getIntExtra("ChosenCourseId",0);
+        String courseIdString = Integer.toString(courseId);
+        String chosenTag = intent.getStringExtra("ChosenTag");
         courseArrayList = getIntent().getParcelableArrayListExtra(Course.class.getCanonicalName());
-        Log.d("CourseTopicActivity"," Intent course = " + courseId);
+        courseTopicArrayList = getIntent().getParcelableArrayListExtra(CourseTopic.class.getCanonicalName());
+        tagArrayList = getIntent().getParcelableArrayListExtra(Tag.class.getCanonicalName());
+        Log.d(TAG," Intent course = " + courseId);
+        Log.d(TAG," Intent courseString = " + courseIdString);
+        Log.d(TAG," Intent chosenTag = " + chosenTag);
 
-        OkHttpClient clientTopic = new OkHttpClient
-                .Builder()
-                .cache(new Cache(getApplicationContext().getCacheDir(), 50*1024*1024)) // 10 MB
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public okhttp3.Response intercept(Chain chain) throws IOException {
-                        Request request = chain.request();
-                        request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
-                        return chain.proceed(request);
-                    }
-                })
-                .build();
+        ArrayList<CourseTopic> courseTopicArrayList1 = new ArrayList<CourseTopic>();
+        for (CourseTopic object: courseTopicArrayList) {
+            if (object.course.equals(courseIdString)){
+                courseTopicArrayList1.add(object);
+            }
+        }
+        ArrayList<String> courseTopicNames = new ArrayList<String>();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.107:8000/")
-                .client(clientTopic)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        CourseTopicApi courseTopicApi = retrofit.create(CourseTopicApi.class);
-        Call<List<CourseTopic>> courseTopics = courseTopicApi.courseTopic(courseId);
-
-        courseTopics.enqueue(new Callback<List<CourseTopic>>() {
-            @Override
-            public void onResponse(Call<List<CourseTopic>> call, Response<List<CourseTopic>> response) {
-                if (response.isSuccessful()) {
-                    //создание массива лекций дисциплин
-                    courseTopicArrayList.addAll(response.body());
-                    //создание массива с именами лекций дисциплин
-                    ArrayList<String> ar = new ArrayList<String>();
-                    for (CourseTopic object: courseTopicArrayList) {
-                        ar.add(object.name);
-                    }
-                    ArrayAdapter<String> adapter;
-                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
-                    topicList.setAdapter(adapter);
-
-                    Log.d(TAG,"Response successful");
-                } else {
-                    Log.d(TAG,"Response not successful");
+        if (chosenTag.equals("НетТега")){
+            Log.d(TAG,"По ифу зашел в нет тега");
+            for (CourseTopic object: courseTopicArrayList1){
+                courseTopicNames.add(object.name);
+                Log.d(TAG," object.name" + object.name);
+            }
+        } else {
+            Log.d(TAG,"По ифу зашел в есть тег");
+            ArrayList<CourseTopic> courseTopicArrayList2 = new ArrayList<CourseTopic>();
+            for (CourseTopic object: courseTopicArrayList1) {
+                if (object.tag.contains(chosenTag)){
+                    courseTopicArrayList2.add(object);
+                    courseTopicNames.add(object.name);
                 }
             }
-            @Override
-            public void onFailure(Call<List<CourseTopic>> call, Throwable t) {
-                Log.d(TAG,"Response failed");
-            }
-        });
+        }
+
+        topicList = (ListView)findViewById(R.id.listTopic);
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, courseTopicNames);
+        topicList.setAdapter(adapter);
+
+        tagList = (ListView)findViewById(R.id.listTag);
+        ArrayList<String> tagnames = new ArrayList<String>();
+        for (Tag object: tagArrayList) {
+            tagnames.add(object.name);
+        }
+        ArrayAdapter<String> adapter2;
+        adapter2 = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, tagnames);
+        tagList.setAdapter(adapter2);
 
         topicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 intent.setClass(CourseTopicsActivity.this, DetailsActivity.class);
-                intent.putExtra("ChosenTopicsCode", position + 1);
+                int chosenTopicsCode = 0;
+                chosenTopicsCode = position + 1;
+                intent.putExtra("ChosenTopicsCode", chosenTopicsCode);
                 intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
+                //запускаем активность лекции
+                startActivity(intent);
+            }
+        });
+
+        tagList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                intent.setClass(CourseTopicsActivity.this, CourseTopicsActivity.class);
+                String chosenTag = "НетТега";
+                chosenTag = tagArrayList.get(position).name;
+                intent.putExtra("ChosenTag", chosenTag);
                 //запускаем активность лекции
                 startActivity(intent);
             }

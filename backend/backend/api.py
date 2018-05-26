@@ -42,7 +42,7 @@ class CourseTopicViewSet(viewsets.ModelViewSet):
     queryset = models.CourseTopic.objects.all()
     serializer_class = CourseTopicSerializer
     filter_backends = (rest_framework.DjangoFilterBackend,)
-    filter_fields = ('course', 'code', 'name')
+    filter_fields = ('course', 'code', 'name', 'tag')
 
 
 class TagViewSet(viewsets.ModelViewSet):

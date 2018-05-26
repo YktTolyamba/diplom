@@ -31,7 +31,7 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
                     <ListView
-                        android:id="@+id/list"
+                        android:id="@+id/listTopic"
                         android:layout_width="match_parent"
                         android:layout_height="389dp"
                         android:layout_weight="0.86"
@@ -43,6 +43,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+                    <ListView
+                        android:id="@+id/listTag"
+                        android:layout_width="match_parent"
+                        android:layout_height="389dp"
+                        android:layout_weight="0.86"
+                        android:textColor="#000000"/>
 
                 </LinearLayout>
             </FrameLayout>
