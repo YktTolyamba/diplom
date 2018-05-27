@@ -1,14 +1,17 @@
 package com.example.anisi.metanit.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.anisi.metanit.Course;
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.228:8000/")
+                .baseUrl("http://192.168.0.107:8000/")
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -90,7 +93,22 @@ public class MainActivity extends AppCompatActivity {
                         ar.add(object.name);
                     }
                     ArrayAdapter<String> adapter;
-                    adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, ar);
+                    adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, ar){
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent){
+                            // Get the Item from ListView
+                            View view = super.getView(position, convertView, parent);
+
+                            // Initialize a TextView for ListView each Item
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+                            // Set the text color of TextView (ListView Item)
+                            tv.setTextColor(Color.BLACK);
+
+                            // Generate ListView Item using TextView
+                            return view;
+                        }
+                    };
                     userList.setAdapter(adapter);
 
                     //Прием данных лекций в цикле
@@ -152,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> a, View v, final int position, long id) {
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, CourseTopicsActivity.class);
-                int courseId = courseArrayList.get(position).id;
+                String courseUrl = courseArrayList.get(position).url;
                 String chosenTag = "НетТега";
-                intent.putExtra("ChosenCourseId", courseId);
+                intent.putExtra("ChosenCourseUrl", courseUrl);
                 intent.putParcelableArrayListExtra(Course.class.getCanonicalName(), courseArrayList);
                 intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
                 intent.putParcelableArrayListExtra(Tag.class.getCanonicalName(), tagArrayList);

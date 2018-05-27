@@ -1,37 +1,26 @@
 package com.example.anisi.metanit.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TabHost;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.anisi.metanit.Course;
 import com.example.anisi.metanit.CourseTopic;
-import com.example.anisi.metanit.CourseTopicApi;
 import com.example.anisi.metanit.R;
 import com.example.anisi.metanit.Tag;
-import com.example.anisi.metanit.TagApi;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import okhttp3.Cache;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import static com.example.anisi.metanit.R.id.listTopic;
 
 public class CourseTopicsActivity extends AppCompatActivity {
 
@@ -41,6 +30,7 @@ public class CourseTopicsActivity extends AppCompatActivity {
     ArrayList<Course> courseArrayList = new ArrayList<>();
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
     ArrayList<Tag> tagArrayList = new ArrayList<>();
+    ArrayList<CourseTopic> courseTopicArrayList1 = new ArrayList<>();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -58,114 +48,53 @@ public class CourseTopicsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_topics);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Log.d("CourseTopicActivity","onCreate: create");
-
-
-
-        TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
-        // инициализация
-        tabHost.setup();
-
-        TabHost.TabSpec tabSpec;
-
-        // создаем вкладку и указываем тег
-        tabSpec = tabHost.newTabSpec("tag1");
-        // название вкладки
-        tabSpec.setIndicator("Лекции");
-        // указываем id компонента из FrameLayout, он и станет содержимым
-        tabSpec.setContent(R.id.tab1);
-        // добавляем в корневой элемент
-        tabHost.addTab(tabSpec);
-
-        tabSpec = tabHost.newTabSpec("tag2");
-        // указываем название и картинку
-        // в нашем случае вместо картинки идет xml-файл,
-        // который определяет картинку по состоянию вкладки
-        tabSpec.setIndicator("Тэги", getResources().getDrawable(R.drawable.tab_icon_selector));
-        tabSpec.setContent(R.id.tab2);
-        tabHost.addTab(tabSpec);
-
-        // первая вкладка будет выбрана по умолчанию
-        tabHost.setCurrentTabByTag("tag1");
-
-        // обработчик переключения вкладок
-        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            public void onTabChanged(String tabId) {
-                Toast.makeText(getBaseContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
-            }
-        });
+        topicList = (ListView)findViewById(listTopic);
+        Log.d(TAG,"onCreate: create");
 
         //получение id выбранного курса
         final Intent intent = getIntent();
-        int courseId = intent.getIntExtra("ChosenCourseId",0);
-        String courseIdString = Integer.toString(courseId);
-        String chosenTag = intent.getStringExtra("ChosenTag");
+        String courseUrl = intent.getStringExtra("ChosenCourseUrl");
         courseArrayList = getIntent().getParcelableArrayListExtra(Course.class.getCanonicalName());
         courseTopicArrayList = getIntent().getParcelableArrayListExtra(CourseTopic.class.getCanonicalName());
         tagArrayList = getIntent().getParcelableArrayListExtra(Tag.class.getCanonicalName());
-        Log.d(TAG," Intent course = " + courseId);
-        Log.d(TAG," Intent courseString = " + courseIdString);
-        Log.d(TAG," Intent chosenTag = " + chosenTag);
 
-        ArrayList<CourseTopic> courseTopicArrayList1 = new ArrayList<CourseTopic>();
+        //фильтр топиков по курсам
         for (CourseTopic object: courseTopicArrayList) {
-            if (object.course.equals(courseIdString)){
+            if (object.course.equals(courseUrl)){
                 courseTopicArrayList1.add(object);
             }
         }
-        ArrayList<String> courseTopicNames = new ArrayList<String>();
 
-        if (chosenTag.equals("НетТега")){
-            Log.d(TAG,"По ифу зашел в нет тега");
-            for (CourseTopic object: courseTopicArrayList1){
-                courseTopicNames.add(object.name);
-                Log.d(TAG," object.name" + object.name);
-            }
-        } else {
-            Log.d(TAG,"По ифу зашел в есть тег");
-            ArrayList<CourseTopic> courseTopicArrayList2 = new ArrayList<CourseTopic>();
-            for (CourseTopic object: courseTopicArrayList1) {
-                if (object.tag.contains(chosenTag)){
-                    courseTopicArrayList2.add(object);
-                    courseTopicNames.add(object.name);
-                }
-            }
+        ArrayList<String> courseTopicNames = new ArrayList<>();
+        for (CourseTopic object : courseTopicArrayList1) {
+            courseTopicNames.add(object.name);
         }
-
-        topicList = (ListView)findViewById(R.id.listTopic);
         ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, courseTopicNames);
-        topicList.setAdapter(adapter);
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, courseTopicNames){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                // Get the Item from ListView
+                View view = super.getView(position, convertView, parent);
 
-        tagList = (ListView)findViewById(R.id.listTag);
-        ArrayList<String> tagnames = new ArrayList<String>();
-        for (Tag object: tagArrayList) {
-            tagnames.add(object.name);
-        }
-        ArrayAdapter<String> adapter2;
-        adapter2 = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, tagnames);
-        tagList.setAdapter(adapter2);
+                // Initialize a TextView for ListView each Item
+                TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+                // Set the text color of TextView (ListView Item)
+                tv.setTextColor(Color.BLACK);
+
+                // Generate ListView Item using TextView
+                return view;
+            }
+        };
+        topicList.setAdapter(adapter);
 
         topicList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 intent.setClass(CourseTopicsActivity.this, DetailsActivity.class);
-                int chosenTopicsCode = 0;
-                chosenTopicsCode = position + 1;
+                int chosenTopicsCode = position + 1;
                 intent.putExtra("ChosenTopicsCode", chosenTopicsCode);
-                intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList);
-                //запускаем активность лекции
-                startActivity(intent);
-            }
-        });
-
-        tagList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                intent.setClass(CourseTopicsActivity.this, CourseTopicsActivity.class);
-                String chosenTag = "НетТега";
-                chosenTag = tagArrayList.get(position).name;
-                intent.putExtra("ChosenTag", chosenTag);
+                intent.putParcelableArrayListExtra(CourseTopic.class.getCanonicalName(), courseTopicArrayList1);
                 //запускаем активность лекции
                 startActivity(intent);
             }
@@ -175,36 +104,36 @@ public class CourseTopicsActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("CourseTopicActivity", "onRestart");
+        Log.d(TAG, "onRestart");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("CourseTopicActivity", "onStart");
+        Log.d(TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("CourseTopicActivity", "onResume");
+        Log.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("CourseTopicActivity", "onPause");
+        Log.d(TAG, "onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("CourseTopicActivity", "onStop");
+        Log.d(TAG, "onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("CourseTopicActivity", "onDestroy");
+        Log.d(TAG, "onDestroy");
     }
 }

@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     defaultConfig {
         applicationId "com.example.anisi.metanit"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -31,4 +31,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     //markdown
     compile 'us.feras.mdv:markdownview:1.1.0'
+    compile 'ru.noties:markwon:1.0.5'
 }

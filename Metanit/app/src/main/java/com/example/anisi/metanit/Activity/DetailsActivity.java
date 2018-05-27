@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.anisi.metanit.CourseTopic;
 import com.example.anisi.metanit.R;
 
 import java.util.ArrayList;
 
-import us.feras.mdv.MarkdownView;
+import ru.noties.markwon.Markwon;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -49,14 +50,14 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        TextView textView = (TextView)findViewById(R.id.textView6);
         Log.d("DetailsActivity", "onCreate: create");
-        MarkdownView markdownView = (MarkdownView) findViewById(R.id.markdownView);
         Intent intent = getIntent();
         topicsCodeInt = intent.getIntExtra("ChosenTopicsCode",0);
         String topicsCodeString = Integer.toString(topicsCodeInt);
         Log.d(TAG,"ChosenTopicCode = " + topicsCodeString);
         String MDtext = getTopicText(topicsCodeString);
-        markdownView.loadMarkdown(MDtext);
+        Markwon.setMarkdown(textView, MDtext);
     }
 
     @Override
