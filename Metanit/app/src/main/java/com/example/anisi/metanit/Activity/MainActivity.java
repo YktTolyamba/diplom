@@ -34,6 +34,9 @@ import retrofit2.Callback;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +49,39 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Course> courseArrayList = new ArrayList<>();
     ArrayList<CourseTopic> courseTopicArrayList = new ArrayList<>();
     ArrayList<Tag> tagArrayList = new ArrayList<>();
+    boolean serverConnect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG,"onCreate");
+
+        //проверка связи с сервером, если нет, то клиенту Okhttp будет передано, чтобы он в этом случае использовал кэш
+        final Retrofit proverkaServera = new Retrofit.Builder()
+                .baseUrl("http://192.168.0.107:8000/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        CoursesApi coursesApiProverka = proverkaServera.create(CoursesApi.class);
+        Call<List<Course>> coursesProverka = coursesApiProverka.course();
+
+        coursesProverka.enqueue(new Callback<List<Course>>() {
+            @Override
+            public void onResponse(Call<List<Course>> call, Response<List<Course>> response) {
+                if (response.isSuccessful()) {
+                    serverConnect = true;
+                    Log.d(TAG,"Connection to server - success");
+                } else {
+                    Log.d(TAG,"Connection to server - not success");
+                    serverConnect = false;
+                }
+            }
+            @Override
+            public void onFailure(Call<List<Course>> call, Throwable t) {
+                Log.d(TAG,"Connection to server - failure");
+                serverConnect = false;
+            }
+        });
 
         //прием данных и кэширование
         OkHttpClient client = new OkHttpClient
@@ -61,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
-                        if(Utils.isNetworkAvailable(getApplicationContext())) {
+                        if(Utils.isNetworkAvailable(getApplicationContext()) || !(InetAddress.getByName("192.168.0.107:8000")).isReachable(500)) {
                             request = request.newBuilder().header("Cache-Control", "public, max-age=" + 60).build();
                         } else {
                             request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
