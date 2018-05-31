@@ -4,9 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-/**
- * Created by Толян on 10.05.2018.
- */
 
 public class Course implements Parcelable {
     public int id;
