@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public okhttp3.Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
-                        if(Utils.isNetworkAvailable(getApplicationContext()) || !(InetAddress.getByName("192.168.0.107:8000")).isReachable(500)) {
+                        //if(Utils.isNetworkAvailable(getApplicationContext()) || !(InetAddress.getByName("192.168.0.107")).isReachable(500)) {
+                        if (InetAddress.getByName("192.168.0.107").isReachable(500)) {
                             request = request.newBuilder().header("Cache-Control", "public, max-age=" + 60).build();
                         } else {
                             request = request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build();
